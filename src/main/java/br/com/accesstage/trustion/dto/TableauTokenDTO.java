@@ -1,0 +1,14 @@
+package br.com.accesstage.trustion.dto;
+
+public class TableauTokenDTO {
+
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+}

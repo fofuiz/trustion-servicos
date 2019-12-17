@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<layouts>
+  <layout id="idLayoutVideo" delimitador=";">
+    <configuracoes>
+      <ignoreLinhasNaoDeclaradas value="true" />
+      <ignoreLinhasEmBranco value="true" />
+    </configuracoes>
+    <linha id="detalhe" tipo="detalhe">
+      <coluna  id="dataVideoGtv"            formato="dd/MM/yyyy"  tipo="DATA"/>
+      <coluna  id="numeroLoja"                                    tipo="NUMERICO"/>
+      <coluna  id="idLojaDescricao"         tamanho="220"         tipo="ALFA"/>
+      <coluna  id="cnpj"                    tamanho="220"         tipo="ALFA"/>
+      <coluna  id="gtv"                                           tipo="NUMERICO"/>
+      <coluna  id="link"                    tamanho="220"         tipo="ALFA"/>
+    </linha>
+  </layout>
+</layouts>

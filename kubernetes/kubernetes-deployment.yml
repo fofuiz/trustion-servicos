@@ -1,0 +1,97 @@
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      provider: accesstage
+      project: trustion-servicos
+      version: 0.0.1-SNAPSHOT
+      group: br.com.accesstage
+    name: trustion-servicos
+    namespace: l2-backend-brinks
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        project: trustion-servicos
+        provider: accesstage
+        version: 0.0.1-SNAPSHOT
+        group: br.com.accesstage
+    template:
+      metadata:
+        labels:
+          provider: accesstage
+          project: trustion-servicos
+          version: 0.0.1-SNAPSHOT
+          group: br.com.accesstage
+      spec:
+        containers:
+        - name: trustion-servicos
+          image: registry-prd1.accesstage.com.br/trustion-servicos:__TAG__
+          resources:
+            requests: 
+              memory: "150Mi"
+              cpu: "100m"
+            limits:
+              memory: "480Mi"
+              cpu: "2000m"
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-profile
+                  key: SPRING_PROFILES_ACTIVE
+            - name: HTTPS_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: linux-proxy
+                  key: HTTPS_PROXY
+            - name: HTTP_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: linux-proxy
+                  key: HTTP_PROXY
+            - name: NO_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  name: linux-proxy
+                  key: NO_PROXY
+            - name: JAVA_PROXY_ACCESSTAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: java-proxy
+                  key: JAVA_PROXY_ACCESSTAGE
+            - name: JVM_CONFIG_DEFAULT
+              valueFrom:
+                configMapKeyRef:
+                  name: jvm-config-default
+                  key: JVM_CONFIG_DEFAULT
+            - name: JVM_MEMORY_SIZE
+              value: -Xmx128m -Xms128m
+            - name: JVM_GARBAGE_CONF
+              value: -XX:SurvivorRatio=4 -XX:TargetSurvivorRatio=90 -XX:MinHeapFreeRatio=25
+            - name: JVM_CONFIG
+              value: -XX:+UnlockExperimentalVMOptions -XX:ActiveProcessorCount=2 -XX:+UseCGroupMemoryLimitForHeap -Xss256k
+            - name: JAVA_SECURITY
+              value: -Djava.security.egd=file:/dev/./urandom
+          securityContext:
+            privileged: false
+        volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: nfs-edi-data-claim            
+        imagePullSecrets:
+        - name: regcred

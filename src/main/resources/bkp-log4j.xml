@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//LOGGER" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+<appender name="fileAppenderINFO" class="org.apache.log4j.RollingFileAppender">
+	<param name="file" value="/data/trustion/log/info.log" />
+	<param name="append" value="true" />
+	<param name="Threshold" value="INFO" />
+	<param name="maxFileSize" value="10MB" />
+	<param name="maxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-8p %d{dd/MMM/yyyy HH:mm:ss} - %c.%M %m%n" />
+		</layout>
+</appender>
+
+<appender name="fileAppenderError" class="org.apache.log4j.RollingFileAppender">
+	<param name="file" value="/data/trustion/log/error.log" />
+	<param name="append" value="true" />
+	<param name="Threshold" value="ERROR" />
+	<param name="maxFileSize" value="10MB" />
+	<param name="maxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-8p %d{dd/MMM/yyyy HH:mm:ss} - %c.%M %m%n" />
+		</layout>
+</appender>
+
+<appender name="stdOut" class="org.apache.log4j.ConsoleAppender">
+	<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-8p %d{dd/MMM/yyyy HH:mm:ss} - %c.%M %m%n" />
+		</layout>
+</appender>
+
+<root>
+    <appender-ref ref="fileAppenderINFO" />
+    <appender-ref ref="fileAppenderError" />
+    <appender-ref ref="stdOut" />
+</root>
+
+</log4j:configuration>

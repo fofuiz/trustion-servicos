@@ -1,0 +1,35 @@
+#!/usr/bin/env groovy
+
+import groovy.transform.Field
+
+
+
+node {
+    CheckoutProject()
+    Deploy()
+}
+def CheckoutProject() {
+    def branch = "develop"
+
+    stage ("Checkout Project") {
+        checkout([$class: 'GitSCM', branches: [[name: '*/' + branch]], 
+        doGenerateSubmoduleConfigurations: false,  
+        userRemoteConfigs: [[credentialsId: '38a55a99-1704-4c13-b637-16ec64887274', 
+            url: 'http://jenkins@gitlab.accesstage.com.br/desenvolvimento-projetos/demanda-projetos/brinks-portal.git']]])
+    }
+}
+
+def Deploy() {
+    def env = "dev"
+
+    stage ("Deploy") {
+
+        //Alterar imagem dentro do arquivo de deployment do Kubernets
+        sh 'sed -i s/__TAG__/${IMAGE_NUMBER}/g ./kubernetes/kubernetes-rivendel-'+env+'.yml'
+
+        //Executa deploy no kubernets
+        sh 'kubectl apply -f ./kubernetes/kubernetes-rivendel-'+env+'.yml --kubeconfig=/var/lib/jenkins/kube-config/kube-config-'+env
+        
+    }
+}
+

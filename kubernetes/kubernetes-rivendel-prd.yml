@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      expose: "true"
+      provider: fabric8
+      project: brinks-portal
+      version: 1.1.0-SNAPSHOT
+      group: com.accesstage
+    name: brinks-portal
+    namespace: projetos
+  spec:
+    ports:
+    - nodePort: 30006
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      project: brinks-portal
+      provider: fabric8
+      group: com.accesstage
+    type: NodePort
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      provider: fabric8
+      project: brinks-portal
+      version: 1.1.0-SNAPSHOT
+      group: com.accesstage
+    name: brinks-portal
+    namespace: projetos
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        project: brinks-portal
+        provider: fabric8
+        version: 1.1.0-SNAPSHOT
+        group: com.accesstage
+    template:
+      metadata:
+        labels:
+          provider: fabric8
+          project: brinks-portal
+          version: 1.1.0-SNAPSHOT
+          group: com.accesstage
+      spec:
+        containers:
+        - name: brinks-portal
+          image: registry-prd1.accesstage.com.br/brinks-portal:__TAG__
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          #readinessProbe:
+          #  httpGet:
+          #    path: /uaa/health
+          #    port: 8080
+          #  initialDelaySeconds: 0
+          #  failureThreshold: 30
+          #  periodSeconds: 10
+          #  timeoutSeconds: 5
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: HTTP_PROXY
+              value: http://192.168.130.240:3128
+            - name: HTTPS_PROXY
+              value: http://192.168.130.240:3128
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+            requests:
+              memory: 256Mi
+              cpu: 250m
+          securityContext:
+            privileged: false
+        imagePullSecrets:
+        - name: regcred

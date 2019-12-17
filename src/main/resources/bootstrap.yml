@@ -1,0 +1,53 @@
+server:
+  port: 8080
+  context-path: /trustion-servicos
+  
+spring:
+  application:
+    name: trustion-servicos
+  cloud:
+    config:
+      uri: ${hiker_hagrid_URL:http://hiker-hagrid.l4-applicationsupport-coffer.svc.cluster.local:8080}
+
+
+
+---
+spring:
+  profiles: develop
+  cloud:
+    config:
+      uri: http://ualbax-dev.accesstage.com.br:30002
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+
+
+
+---
+spring:
+  profiles: homolog
+  cloud:
+    config:
+      uri: http://ualbax-hom.accesstage.com.br:30002
+
+
+
+---
+spring:
+  profiles: prod
+
+
+
+---
+spring:
+  profiles: local
+  cloud:
+    config:
+      uri: http://ualbax-dev.accesstage.com.br:30002
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG

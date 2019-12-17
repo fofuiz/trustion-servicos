@@ -1,0 +1,45 @@
+#!/usr/bin/env groovy
+import groovy.transform.Field
+node {
+    CleanWork()
+    PipelineBrinksModel()
+    CheckoutWork()
+    MVNBuild()
+    DockerBuild()
+}
+def CleanWork(){
+     stage ("Clean Workspace") {
+        step([$class: 'WsCleanup'])
+    }
+}
+
+def PipelineBrinksModel() {
+
+    stage ("Pipeline Trustion Model") {
+        build(
+                job: "${MODEL}"
+        )
+    }
+}
+
+
+def CheckoutWork(){
+     stage ("Checkout Git") {
+        checkout scm
+    }
+}
+
+def MVNBuild() {
+   stage ("Maven Build") {
+       //Builda a aplicacao com o profile definido
+       sh 'export DOCKER_HOST=tcp://127.0.0.1:2375; mvn clean install -DskipTests=true'
+    }   
+}
+def DockerBuild(){
+    stage ("Docker Build") {
+        // Build da imagem
+        def dockerImage = docker.build("registry-prd1.accesstage.com.br/${IMAGE_NAME}:${IMAGE_ENV}-${BUILD_NUMBER}", "--no-cache --build-arg HTTP_PROXY=${PROXY} --build-arg HTTPS_PROXY=${PROXY} --file ./${DOCKERFILE} .")
+        // Faz push da imagem buildada par ao Registry da Accesstage
+        dockerImage.push()
+    }
+}
